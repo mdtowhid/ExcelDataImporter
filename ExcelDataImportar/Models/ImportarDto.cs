@@ -7,7 +7,8 @@ namespace ExcelDataImportar.Models
     {
         public IFormFile File { get; set; }
         public bool HasError { get; set; }
-        public string ErrorText { get; set; }
+        public string Message { get; set; }
+        public string FileName { get; set; }
         public AuditData AuditData { get; set; }
         public List<AuditData> AuditDataList { get; set; }
         public int TotalCount { get; set; }

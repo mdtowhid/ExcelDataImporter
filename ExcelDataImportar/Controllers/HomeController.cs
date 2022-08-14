@@ -32,7 +32,7 @@ namespace ExcelDataImportar.Controllers
             if(importarDto.File == null)
             {
                 importarDto.HasError = true;
-                importarDto.ErrorText = "Please select excel file";
+                importarDto.Message = "Please select excel file";
             }
             else
             {
@@ -40,7 +40,7 @@ namespace ExcelDataImportar.Controllers
                 if (isAlreadyUploaded)
                 {
                     importarDto.HasError = true;
-                    importarDto.ErrorText = $"{importarDto.File.FileName} already uploaded.";
+                    importarDto.Message = $"{importarDto.File.FileName} already uploaded.";
                 }
                 else
                 {
@@ -54,7 +54,7 @@ namespace ExcelDataImportar.Controllers
                         if (ext != "xls" && ext != "xlsx")
                         {
                             importarDto.HasError = true;
-                            importarDto.ErrorText = "Please select excel file";
+                            importarDto.Message = "Please select excel file";
                         }
                         else
                         {
@@ -84,7 +84,7 @@ namespace ExcelDataImportar.Controllers
             if (importarDto.File == null)
             {
                 importarDto.HasError = true;
-                importarDto.ErrorText = "Please select excel file";
+                importarDto.Message = "Please select excel file";
             }
             else
             {
@@ -92,7 +92,7 @@ namespace ExcelDataImportar.Controllers
                 if (isAlreadyUploaded)
                 {
                     importarDto.HasError = true;
-                    importarDto.ErrorText = $"{importarDto.File.FileName} already uploaded.";
+                    importarDto.Message = $"{importarDto.File.FileName} already uploaded.";
                 }
                 else
                 {
@@ -106,10 +106,11 @@ namespace ExcelDataImportar.Controllers
                         if (ext != "xls" && ext != "xlsx")
                         {
                             importarDto.HasError = true;
-                            importarDto.ErrorText = "Please select excel file";
+                            importarDto.Message = "Please select excel file";
                         }
                         else
                         {
+                            importarDto.FileName = fileName;
                             importarDto = await _excelDataReaderBll.ExtractExcelData(importarDto);
                         }
                     }
@@ -119,12 +120,21 @@ namespace ExcelDataImportar.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PreviewExcel(string importarDto1)
+        public async Task<IActionResult> PreviewOrImportExcel(string importarDto1)
         {
             if (importarDto1 != null)
             {
-                ImportarDto importar = JsonConvert.DeserializeObject<ImportarDto>(importarDto1);
-                return PartialView("~/views/home/_PreviewExcel.cshtml", importar.AuditDataList);
+                ImportarDto importarDto = JsonConvert.DeserializeObject<ImportarDto>(importarDto1);
+                if (importarDto.ForImport)
+                {
+                    importarDto.Message = await _excelDataReaderBll.Import(importarDto);
+                    return PartialView("~/views/home/_PreviewExcel.cshtml", importarDto.AuditDataList);
+                }
+                else
+                {
+                    return PartialView("~/views/home/_PreviewExcel.cshtml", importarDto.AuditDataList);
+                }
+                
             }
             else
             {

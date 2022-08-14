@@ -32,6 +32,38 @@ namespace ExcelDataImportar.Models
             return isExist;
 
         }
+
+        public async Task<string> Import(ImportarDto importarDto)
+        {
+            try
+            {
+                var audits = _context.AuditData.ToList();
+                if (audits.Count > 0)
+                {
+                    _context.AuditData.RemoveRange(audits);
+                    await _context.SaveChangesAsync();
+                }
+                _context.AuditData.AddRange(importarDto.AuditDataList);
+                await _context.SaveChangesAsync();
+
+                AuditMasterData auditMasterData = new();
+
+                auditMasterData.CreatedAt = DateTimeOffset.Now;
+                auditMasterData.ExcelId = importarDto.AuditDataList[1].ExcelId;
+                auditMasterData.UserId = 1;
+                auditMasterData.FileName = importarDto.FileName;
+                _context.ExcelMasterDatas.AddRange(auditMasterData);
+                await _context.SaveChangesAsync();
+                importarDto.Message = "Excel data imported successfully";
+            }
+            catch (Exception ex)
+            {
+                importarDto.Message = ex.Message;
+                importarDto.HasError = true;
+            }
+
+            return importarDto.Message;
+        }
         public async Task<ImportarDto> ProcessExcelData(ImportarDto importarDto)
         {
             var file = importarDto.File;
@@ -138,7 +170,7 @@ namespace ExcelDataImportar.Models
             }
             catch (Exception ex)
             {
-                importarDto.ErrorText = ex.Message;
+                importarDto.Message = ex.Message;
                 importarDto.HasError = true;
             }
             return importarDto;
@@ -244,7 +276,7 @@ namespace ExcelDataImportar.Models
                         }
                         else
                         {
-                            importarDto.ErrorText = "Excel dosen't contain default sheet Sheet1";
+                            importarDto.Message = "Excel dosen't contain default sheet Sheet1";
                             importarDto.HasError = true;
                         }
                         
@@ -253,7 +285,7 @@ namespace ExcelDataImportar.Models
             }
             catch (Exception ex)
             {
-                importarDto.ErrorText = ex.Message;
+                importarDto.Message = ex.Message;
                 importarDto.HasError = true;
             }
             return importarDto;

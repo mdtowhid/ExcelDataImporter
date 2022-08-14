@@ -31,7 +31,7 @@
     const sheetsWrapper = document.getElementById('sheetsWrapper');
     const sheets = document.getElementById('sheets');
     const url = '@Url.Action("ExcelImportarAjax","Home")';
-    const url1 = '@Url.Action("PreviewExcel","Home")';
+    const url1 = '@Url.Action("PreviewOrImportExcel","Home")';
     let extractedData = null;
     let importarDto = new FormData();
     formFileSm.addEventListener('change', (e) => {
@@ -56,7 +56,6 @@
                 let list = data.auditDataList;
                 let importarDto1 = {
                     auditDataList: list,
-                    totalCount: list.length,
                 };
                 let importarDto1Json = JSON.stringify(importarDto1)
 
@@ -107,18 +106,17 @@
     });
     btnImport.addEventListener('click', (e) => {
         previewGrid.innerHTML = `<i>Loading</>`;
-        Axios.postDataWithFile(url, importarDto, 'json', (data) => {
-            let options = ``;
-            
-            if (!data.hasError) {
-                extractedData.forImport = true;
-                let importarDto1Json = JSON.stringify(extractedData);
-                previewGrid.innerHTML = `Data imported successfully`;
-                previewGrid.classList.add('text-success');
-            } else {
-                previewGrid.classList.add('error');
-                previewGrid.innerHTML = data.errorText;
-            }
+        
+        let importarDto1 = {
+            auditDataList: extractedData.auditDataList,
+            forImport: true
+        };
+
+        Axios.postData(url1, {
+            importarDto1: JSON.stringify(importarDto1)
+        }, 'HTML', (grid) => {
+            previewGrid.classList.remove('error');
+            previewGrid.innerHTML = grid;
         });
     });
 </script>
