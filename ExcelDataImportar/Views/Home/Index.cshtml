@@ -1,0 +1,25 @@
+﻿@model ImportarDto
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@*<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <form asp-action="ExcelImportar" 
+                asp-controller="Home"
+                enctype="multipart/form-data"
+                method="post">
+            <div class="mb-3">
+                <label for="formFileSm" class="form-label">Small file input example</label>
+                <input asp-for="File" class="form-control form-control" id="formFileSm" type="file">
+            </div>
+            <div>
+                <input type="submit" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-2"></div>
+</div>*@
+
+<a asp-action="ExcelImportarAjax" asp-controller="Home">Excel Importar Ajax</a>

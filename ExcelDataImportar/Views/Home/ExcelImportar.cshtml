@@ -1,0 +1,48 @@
+﻿@model ImportarDto
+
+@{
+    ViewData["Title"] = "Excel Importar";
+}
+
+@if (Model != null)
+{
+    if (Model.HasError)
+    {
+        <p>@Model.ErrorText</p>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped table-sm table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Dept Name</th>
+                    <th>Total Per Dept</th>
+                    <th>Reason</th>
+                    <th>Total</th>
+                    <th>Percentage</th>
+                </tr>
+                <tr>
+                    <th class="text-center" colspan="6">Total Records: @Model.AuditDataList.Count</th>
+                </tr>
+            </thead>
+            @if (Model.AuditDataList != null)
+            {
+                foreach (var data in Model.AuditDataList)
+                {
+                    <tr>
+                        <td>@data.Col1</td>
+                        <td>@data.Col2</td>
+                        <td>@data.Col3</td>
+                        <td>@data.Col4</td>
+                        <td>@data.Col5</td>
+                        <td>@data.Col6</td>
+                    </tr>
+                }
+            }
+        </table>
+        
+    }
+}
+
+

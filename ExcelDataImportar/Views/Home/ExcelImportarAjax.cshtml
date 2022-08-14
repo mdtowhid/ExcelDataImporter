@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Excel Importar Ajax";
+}
+
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-5">
+        <div class="mb-3">
+            <label for="formFileSm" class="form-label">Select File</label>
+            <input class="form-control form-control" id="formFileSm" type="file">
+        </div>
+        <div>
+            <input id="btnSubmit" type="button" value="Preview Excel" class="btn btn-sm btn-primary" />
+            <input id="btnImport" type="button" value="Import" class="btn btn-sm btn-success d-none ml-2" />
+        </div>
+    </div>
+    <div class="col-md-2 d-none" id="sheetsWrapper">
+        <label>Sheets</label>
+        <select id="sheets" class="form-control"></select>
+    </div>
+</div>
+
+<div id="previewGrid" class="row mt-3"></div>
+
+<script>
+    const formFileSm = document.getElementById('formFileSm');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const btnImport = document.getElementById('btnImport');
+    const previewGrid = document.getElementById('previewGrid');
+    const sheetsWrapper = document.getElementById('sheetsWrapper');
+    const sheets = document.getElementById('sheets');
+    const url = '@Url.Action("ExcelImportarAjax","Home")';
+    const url1 = '@Url.Action("PreviewExcel","Home")';
+    let extractedData = null;
+    let importarDto = new FormData();
+    formFileSm.addEventListener('change', (e) => {
+        var files = e.target.files;
+        sheetsWrapper.classList.add('d-none')
+        btnImport.classList.add('d-none');
+        if (files.length > 0) {
+            const file = files[0];
+            importarDto = new FormData();
+            importarDto.append('file', file);
+            importarDto.append('Worksheet', 'Sheet1');
+        }
+    });
+    sheets.addEventListener('change', (e) => {
+        importarDto.delete('Worksheet');
+        importarDto.append('Worksheet', sheets.value);
+            previewGrid.innerHTML = `<i>Loading</>`;
+        Axios.postDataWithFile(url, importarDto, 'json', (data) => {
+            if (!data.hasError) {
+                btnImport.classList.remove('d-none');
+                extractedData = data;
+                let list = data.auditDataList;
+                let importarDto1 = {
+                    auditDataList: list,
+                    totalCount: list.length,
+                };
+                let importarDto1Json = JSON.stringify(importarDto1)
+
+                Axios.postData(url1, {
+                    importarDto1: JSON.stringify(importarDto1)
+                }, 'HTML', (grid) => {
+                    previewGrid.classList.remove('error');
+                    previewGrid.innerHTML = grid;
+                });
+            } else {
+                previewGrid.classList.add('error');
+                previewGrid.innerHTML = data.errorText;
+            }
+        });
+    });
+    btnSubmit.addEventListener('click', (e) => {
+        previewGrid.innerHTML = `<i>Loading</>`;
+        Axios.postDataWithFile(url, importarDto, 'json', (data) => {
+            let options = ``;
+            
+            if (!data.hasError) {
+                let workSheets = data.worksheets;
+                let list = data.auditDataList;
+                let importarDto1 = {
+                    auditDataList: list,
+                    totalCount: list.length,
+                };
+                let importarDto1Json = JSON.stringify(importarDto1);
+                btnImport.classList.remove('d-none');
+                sheetsWrapper.classList.remove('d-none');
+                extractedData = data;
+                workSheets.forEach((v, i) => {
+                    options += `<option value="${v}">${v}</option>`
+                });
+                sheets.innerHTML = options;
+
+                Axios.postData(url1, {
+                    importarDto1: JSON.stringify(importarDto1)
+                }, 'HTML', (grid) => {
+                    previewGrid.classList.remove('error');
+                    previewGrid.innerHTML = grid;
+                });
+            } else {
+                previewGrid.classList.add('error');
+                previewGrid.innerHTML = data.errorText;
+            }
+        });
+    });
+    btnImport.addEventListener('click', (e) => {
+        previewGrid.innerHTML = `<i>Loading</>`;
+        Axios.postDataWithFile(url, importarDto, 'json', (data) => {
+            let options = ``;
+            
+            if (!data.hasError) {
+                extractedData.forImport = true;
+                let importarDto1Json = JSON.stringify(extractedData);
+                previewGrid.innerHTML = `Data imported successfully`;
+                previewGrid.classList.add('text-success');
+            } else {
+                previewGrid.classList.add('error');
+                previewGrid.innerHTML = data.errorText;
+            }
+        });
+    });
+</script>

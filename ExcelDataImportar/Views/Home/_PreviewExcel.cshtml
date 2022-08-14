@@ -1,0 +1,59 @@
+﻿@model List<AuditData>
+
+@if (Model != null)
+{
+    <div class="">
+        <table id="previewTable" class="table table-bordered table-striped table-sm table-hover">
+            <thead id="previewHeader">
+                <tr class="bg-primary text-light">
+                    <th>Col1</th>
+                    <th>Col2</th>
+                    <th>Col3</th>
+                    <th>Col4</th>
+                    <th>Col5</th>
+                    <th>Col6</th>
+                    <th>Col7</th>
+                    <th>Col8</th>
+                    <th>Col9</th>
+                    <th>Col10</th>
+                    <th>Col11</th>
+                    <th>Col12</th>
+                    <th>Col13</th>
+                    <th>Col14</th>
+                    <th>Col15</th>
+                    <th>Col16</th>
+                </tr>
+                @*<tr class="bg-primary text-light">
+                    <th class="text-center" colspan="17">Total Records: @Model.Count</th>
+                </tr>*@
+            </thead>
+            <tbody>
+                @foreach (var data in Model)
+                {
+                    <tr>
+                        <td>@data.Col1</td>
+                        <td>@data.Col2</td>
+                        <td>@data.Col3</td>
+                        <td>@data.Col4</td>
+                        <td>@data.Col5</td>
+                        <td>@data.Col6</td>
+                        <td>@data.Col7</td>
+                        <td>@data.Col8</td>
+                        <td>@data.Col9</td>
+                        <td>@data.Col10</td>
+                        <td>@data.Col11</td>
+                        <td>@data.Col12</td>
+                        <td>@data.Col13</td>
+                        <td>@data.Col14</td>
+                        <td>@data.Col15</td>
+                        <td>@data.Col16</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-danger m-0"><b>Oops!</b> Audit Data List is null</p>
+}
